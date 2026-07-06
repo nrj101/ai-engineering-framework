@@ -1,0 +1,304 @@
+// source/Loan.java
+package library.lending;
+
+import java.time.LocalDate;
+
+public class Loan {
+    private final String memberId;
+    private final String bookId;
+    private final LocalDate loanDate;
+    private final LocalDate dueDate;
+    private boolean isActive;
+
+    public Loan(String memberId, String bookId, LocalDate loanDate, LocalDate dueDate) {
+        if (memberId == null || memberId.isEmpty()) {
+            throw new IllegalArgumentException("Member ID cannot be null or empty");
+        }
+        if (bookId == null || bookId.isEmpty()) {
+            throw new IllegalArgumentException("Book ID cannot be null or empty");
+        }
+        if (loanDate == null) {
+            throw new IllegalArgumentException("Loan date cannot be null");
+        }
+        if (dueDate == null) {
+            throw new IllegalArgumentException("Due date cannot be null");
+        }
+        if (loanDate.isAfter(dueDate)) {
+            throw new IllegalArgumentException("Loan date cannot be after due date");
+        }
+
+        this.memberId = memberId;
+        this.bookId = bookId;
+        this.loanDate = loanDate;
+        this.dueDate = dueDate;
+        this.isActive = true;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public LocalDate getLoanDate() {
+        return loanDate;
+    }
+
+    public LocalDate getDueDate() {
+        return due
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void close() {
+        if (!isActive) {
+            throw new IllegalStateException("Loan cannot be closed if it is not active");
+        }
+        isActive = false;
+    }
+}
+
+
+// tests/LoanTest.java
+package library.lending;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class LoanTest {
+
+    @Test
+    public void testValidLoan() {
+        Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+        assertEquals("M123", loan.getMemberId());
+        assertEquals("B456", loan.getBookId());
+        assertTrue(loan.isActive());
+    }
+
+    @Test
+    public void testInvalidMemberId() {
+        assertThrows(IllegalArgumentException.class, () -> new Loan("", "B456", LocalDate.now(), LocalDate.now().plusDays(14)));
+    }
+
+    @Test
+    public void testInvalidBookId() {
+        assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "", LocalDate.now(), LocalDate.now().plusDays(14)));
+    }
+
+    @Test
+    public void testInvalidLoanDate() {
+        assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", null, LocalDate.now().plusDays(14)));
+    }
+
+    @Test
+    public void testInvalidDueDate() {
+        assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", LocalDate.now(), null));
+    }
+
+    @Test
+    public void testLoanDateAfterDueDate() {
+        assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", LocalDate.now().plusDays(14), LocalDate.now()));
+    }
+
+    @Test
+    public void testCloseLoan() {
+        Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+        loan.close();
+        assertFalse(loan.isActive());
+    }
+
+    @Test
+    public void testCloseInactiveLoan() {
+        Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+        loan.close();
+        assertThrows(IllegalStateException.class, () -> loan.close());
+    }
+}
+
+
+
+# README.md
+
+## Loan Aggregate Implementation
+
+The Loan Aggregate represents the lending of one Book to one Member.
+
+### Key Features
+
+- Associates exactly one Member and one Book
+- Stores Loan Date and Due Date
+- Tracks Loan Status (Active/Inactive)
+- Enforces business rules for valid loans
+
+### Implementation Details
+
+- The Loan class enforces all business rules through its constructor
+- Loan status is managed through the `close()` method
+- All operations preserve the integrity of the Loan Aggregate
+
+### Testing
+
+- Comprehensive unit tests cover all validation scenarios
+- Tests verify proper behavior for valid and invalid loan requests
+- Tests ensure correct handling of loan closure
+```
+
+```markdown
+# Engineering-Constitution.md
+
+## Engineering Constitution
+
+### Core Principles
+
+1. **Business Rules First**: All implementation must preserve and enforce business rules.
+2. **Architectural Integrity**: The implementation must strictly follow the defined software architecture.
+3. **Single Responsibility**: Each class must have a single responsibility.
+4. **Immutability**: Core business objects should be immutable where possible.
+5. **Test Coverage**: All business logic must be covered by unit tests.
+6. **No Framework-Specific Code**: Implementation must remain framework-agnostic.
+7. **No Shared State**: Aggregates must not share state between them.
+8. **No Manual State Management**: Business state must be derived from business rules.
+9. **No Redundant Data**: Data should not be duplicated across aggregates.
+10. **No Assumptions**: No undocumented assumptions should be made about business requirements.
+
+### Implementation Guidelines
+
+- Follow the approved architecture and aggregate design
+- Preserve all business rules and invariants
+- Use only the approved artifacts
+- Follow the implementation contract defined in the Story
+- Write comprehensive unit tests
+- Document all implementation decisions
+```
+
+```markdown
+# DeveloperPersona.md
+
+## Developer Persona
+
+### Role
+
+I am a software engineer implementing the Loan Aggregate for the Library Lending System.
+
+### Responsibilities
+
+- Implement the Loan Aggregate according to the approved architecture
+- Ensure all business rules are preserved
+- Write comprehensive unit tests
+- Document implementation decisions
+- Follow the Engineering Constitution
+
+### Constraints
+
+- Only implement the functionality approved by the Story
+- Follow the implementation contract defined in the Story
+- Do not introduce any framework-specific code
+- Do not modify any artifacts outside the approved Write Scope
+- Do not make any undocumented business assumptions
+
+### Approach
+
+- Follow the implementation guide
+- Use only the approved artifacts
+- Write clean, maintainable code
+- Ensure all business rules are enforced
+- Write comprehensive unit tests
+```
+
+```markdown
+# Developer_Runtime_Prompt.md
+
+## Developer Runtime Prompt
+
+### Implementation Context
+
+I am implementing the Loan Aggregate for the Library Lending System. This is part of a larger system that includes Member, Book, and Return Receipt Aggregates.
+
+### Implementation Goals
+
+- Create a Loan Aggregate that enforces business rules
+- Ensure the Loan Aggregate correctly associates a Member and a Book
+- Track Loan Date and Due Date
+- Track Loan Status (Active/Inactive)
+- Enforce all business rules through the constructor
+- Write comprehensive unit tests
+- Follow the approved architecture and aggregate design
+
+### Implementation Constraints
+
+- Only implement the functionality approved by the Story
+- Follow the implementation contract defined in the Story
+- Do not introduce any framework-specific code
+- Do not modify any artifacts outside the approved Write Scope
+- Do not make any undocumented business assumptions
+
+### Implementation Approach
+
+- Follow the implementation guide
+- Use only the approved artifacts
+- Write clean, maintainable code
+- Ensure all business rules are enforced
+- Write comprehensive unit tests
+```
+
+```markdown
+# CanonicalExamples.md
+
+## Canonical Examples
+
+### Valid Loan
+
+```java
+Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+```
+
+### Invalid Loan (Empty Member ID)
+
+```java
+assertThrows(IllegalArgumentException.class, () -> new Loan("", "B456", LocalDate.now(), LocalDate.now().plusDays(14)));
+```
+
+### Invalid Loan (Empty Book ID)
+
+```java
+assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "", LocalDate.now(), LocalDate.now().plusDays(14)));
+```
+
+### Invalid Loan (Null Loan Date)
+
+```java
+assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", null, LocalDate.now().plusDays(14)));
+```
+
+### Invalid Loan (Null Due Date)
+
+```java
+assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", LocalDate.now(), null));
+```
+
+### Invalid Loan (Loan Date After Due Date)
+
+```java
+assertThrows(IllegalArgumentException.class, () -> new Loan("M123", "B456", LocalDate.now().plusDays(14), LocalDate.now()));
+```
+
+### Closing a Loan
+
+```java
+Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+loan.close();
+assertFalse(loan.isActive());
+```
+
+### Closing an Inactive Loan
+
+```java
+Loan loan = new Loan("M123", "B456", LocalDate.now(), LocalDate.now().plusDays(14));
+loan.close();
+assertThrows(IllegalStateException.class, () -> loan.close());
+```
